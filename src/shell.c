@@ -15,6 +15,9 @@ typedef struct {
 	const char *desc;
 } cmdlist;
 
+int atoi( const char * str );
+int fib( int );
+void new();
 void ls_command(int, char **);
 void man_command(int, char **);
 void cat_command(int, char **);
@@ -24,6 +27,7 @@ void help_command(int, char **);
 void host_command(int, char **);
 void mmtest_command(int, char **);
 void test_command(int, char **);
+void new_command(int, char **);
 void _command(int, char **);
 
 #define MKCL(n, d) {.name=#n, .fptr=n ## _command, .desc=d}
@@ -37,6 +41,7 @@ cmdlist cl[]={
 	MKCL(mmtest, "heap memory allocation test"),
 	MKCL(help, "help"),
 	MKCL(test, "test new function"),
+	MKCL(new, "create a new task"),
 	MKCL(, ""),
 };
 
@@ -163,6 +168,10 @@ void help_command(int n,char *argv[]){
 void test_command(int n, char *argv[]) {
     int handle;
     int error;
+    int num;
+    int result;
+    char input[128];
+    char output[128];
 
     fio_printf(1, "\r\n");
     
@@ -175,15 +184,29 @@ void test_command(int n, char *argv[]) {
         return;
     }
 
-    char *buffer = "Test host_write function which can write data to output/syslog\n";
+    fio_printf( 1, "Plz input a fibsqeuence number : \n\r" );
+    fio_read( 0, input, 127 );
+    num = atoi( input );
+    result = fib( num );
+    sprintf( output, "%d", result );
+    fio_printf( 1, "\n\rthe %sth fibnacci number is : %s\n\r", input, output );
+
+    char *buffer = "Test host_write function which can write data and result to output/syslog\n";
     error = host_action(SYS_WRITE, handle, (void *)buffer, strlen(buffer));
     if(error != 0) {
         fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
         host_action(SYS_CLOSE, handle);
         return;
     }
-
+ 
     host_action(SYS_CLOSE, handle);
+}
+
+void new_command(int n, char *argv[]){
+xTaskCreate(new,
+	            (signed portCHAR *) "NEWTask",
+	            512 /* stack size */, NULL, tskIDLE_PRIORITY, NULL);
+	fio_printf(1, "\r\n");
 }
 
 void _command(int n, char *argv[]){
@@ -200,4 +223,16 @@ cmdfunc *do_command(const char *cmd){
 			return cl[i].fptr;
 	}
 	return NULL;	
+}
+
+int fib( int fibseq ) {
+    if ( fibseq <= 0 ) return 0;
+    if ( fibseq == 1 ) return 1;
+
+    return fib( fibseq - 1 ) + fib( fibseq - 2 );
+} // fib()
+
+void new() {
+	vTaskDelay(10000000);
+	return;
 }
