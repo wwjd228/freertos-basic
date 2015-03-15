@@ -100,10 +100,10 @@ void command_prompt(void *pvParameters)
 
 		/* will return pointer to the command function */
 		cmdfunc *fptr=do_command(argv[0]);
-		if(fptr!=NULL)
-			fptr(n, argv);
+		if(fptr!=NULL)	
+			fptr(n, argv);		
 		else
-			fio_printf(2, "\r\n\"%s\" command not found.\r\n", argv[0]);
+	    		fio_printf(2, "\r\n\"%s\" command not found.\r\n", argv[0]);
 	}
 
 }
