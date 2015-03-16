@@ -203,9 +203,11 @@ void test_command(int n, char *argv[]) {
 }
 
 void new_command(int n, char *argv[]){
-xTaskCreate(new,
+    int i = uxTaskGetNumberOfTasks() % 5;
+
+    xTaskCreate(new,
 	            (signed portCHAR *) "NEWTask",
-	            512 /* stack size */, NULL, tskIDLE_PRIORITY, NULL);
+	            512 /* stack size */, NULL, tskIDLE_PRIORITY + i, NULL);
 	fio_printf(1, "\r\n");
 }
 
