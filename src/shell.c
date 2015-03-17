@@ -203,7 +203,7 @@ void test_command(int n, char *argv[]) {
 }
 
 void new_command(int n, char *argv[]){
-    int i = uxTaskGetNumberOfTasks() % 5;
+    int i = uxTaskGetNumberOfTasks() % 2;
 
     xTaskCreate(new,
 	            (signed portCHAR *) "NEWTask",
@@ -235,6 +235,6 @@ int fib( int fibseq ) {
 } // fib()
 
 void new() {
-	vTaskDelay(10000000);
-	return;
+    for ( ;; );
+    vTaskDelete(NULL);
 }
