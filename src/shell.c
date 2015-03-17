@@ -228,10 +228,19 @@ cmdfunc *do_command(const char *cmd){
 }
 
 int fib( int fibseq ) {
-    if ( fibseq <= 0 ) return 0;
-    if ( fibseq == 1 ) return 1;
+    int result = 0, f1 = -1, f2 = 1, current = 0;
+    __asm volatile(".loop : \n"
+        "adds %[value2], %[value3], %[value4] \n"
+	"mov %[value3], %[value4] \n"
+	"mov %[value4], %[value2] \n"
+	"subs %[value1], #1 \n"
+	"ite lt \n"
+	"movlt %[result], %[value2] \n"
+	"bge .loop \n"
+	: [result] "=r" (result)
+	: [value1] "r" (fibseq), [value2] "r" (current), [value3] "r" (f1), [value4] "r" (f2) );
 
-    return fib( fibseq - 1 ) + fib( fibseq - 2 );
+    return result;
 } // fib()
 
 void new() {
